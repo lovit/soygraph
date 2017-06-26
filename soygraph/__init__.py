@@ -8,3 +8,4 @@ from .utils import get_process_memory
 from .utils import get_available_memory
 from . import ranking
 from . import similarity
+from . import embedding
