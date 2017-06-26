@@ -4,5 +4,7 @@ __author__ = 'Lovit'
 __license__ = 'GPL v3'
 
 from ._graph import Graph
+from .utils import get_process_memory
+from .utils import get_available_memory
 from . import ranking
 from . import similarity
