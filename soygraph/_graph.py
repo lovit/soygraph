@@ -49,3 +49,14 @@ class Graph:
         outbounds = self.outb.get(from_node, [])
         outbounds.append((to_node, weight))
         self.outb[from_node] = outbounds
+
+    def nodes(self):
+        nodes = set(self.inb.keys())
+        nodes.update(set(self.outb.keys()))
+        return nodes
+
+    def shape(self):
+        """It returns (V, E)"""
+        V = len(self.nodes())
+        E = sum([len(from_list) for to_node, from_list in self.outb.items()])
+        return (V, E)
