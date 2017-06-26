@@ -1,22 +1,20 @@
 class SimRank:
     def __init__(self, graph=None, max_iter=10, decaying_factor=0.85, 
-                 min_similarity=0.005, max_norm=True, verbose=True):
+                 min_similarity=0.005, normalizer=lambda x: max([w for node, w in x]), 
+                 verbose=True):
         self.g = graph
         self.max_iter = max_iter
         self.df = decaying_factor
         self.sim = {}
         self.min_similarity = min_similarity
-        self.max_norm = max_norm
+        self.normalizer = normalizer
         self.verbose = verbose
 
     def train(self, graph=None):
         if graph:
             self.g = graph
         
-        if self.max_norm:
-            norm = {n:max([w for inbn, w in inbs]) for n, inbs in self.g.inb.items()}
-        else:
-            norm = {n:sum([w for inbn, w in inbs]) for n, inbs in self.g.inb.items()}
+        norm = {n:self.normalizer(inbs) for n, inbs in self.g.inb.items()}
         
         for n_iter in range(1, self.max_iter+1):
             sim_ = defaultdict(lambda: defaultdict(lambda: 0))
