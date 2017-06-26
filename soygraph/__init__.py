@@ -4,3 +4,5 @@ __author__ = 'Lovit'
 __license__ = 'GPL v3'
 
 from ._graph import Graph
+from . import ranking
+from . import similarity
