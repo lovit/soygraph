@@ -1,6 +1,7 @@
 import os
 import psutil
 import numpy as np
+from collections import defaultdict
 from scipy.sparse import csr_matrix
 
 def get_available_memory():
