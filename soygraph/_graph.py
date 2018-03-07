@@ -1,3 +1,5 @@
+from collections import defaultdict
+
 class DictGraph:
     def __init__(self, graph=None):
         if graph and type(graph) == dict and type(list(graph.values())[0]) == dict:
