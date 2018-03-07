@@ -1,12 +1,9 @@
 class DictGraph:
     def __init__(self, graph=None):
-        self.inb = {}
-        self.outb = {}
         if graph and type(graph) == dict and type(list(graph.values())[0]) == dict:
-            self._dump_dictdict(graph)
+            self._index(graph)
 
-    def _dump_dictdict(self, graph):
-        from collections import defaultdict
+    def _index(self, graph):
         self.inb = defaultdict(lambda: [])
         for from_node, to_dict in graph.items():
             to_list = list(sorted(to_dict.items(), key=lambda x:x[1]))
@@ -57,6 +54,6 @@ class DictGraph:
 
     def shape(self):
         """It returns (V, E)"""
-        V = len(self.nodes())
+        V = max(max(self.inb.keys()), max(self.outb.keys())) + 1
         E = sum([len(from_list) for to_node, from_list in self.outb.items()])
         return (V, E)
