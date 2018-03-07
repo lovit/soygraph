@@ -33,9 +33,16 @@ class DictGraph:
         f.close()
 
     def inbounds(self, to_node):
+        """It returns list of tuple. 
+        [(from_node_1, weight), (from_node_2, weight), ...]
+        """
         return self.inb.get(to_node, [])
 
     def outbounds(self, from_node):
+        """It returns list of tuple. 
+        [(to_node_1, weight), (to_node_2, weight), ...]
+        """
+
         return self.outb.get(from_node, [])
 
     def add_node(self, from_node, to_node, weight):
@@ -48,6 +55,7 @@ class DictGraph:
         self.outb[from_node] = outbounds
 
     def nodes(self):
+        """It returns actual existing vertex"""
         nodes = set(self.inb.keys())
         nodes.update(set(self.outb.keys()))
         return nodes
