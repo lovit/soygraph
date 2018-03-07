@@ -37,3 +37,11 @@ def bow_to_graph(x):
     indptr = np.concatenate(
         (x.indptr, x_.indptr[1:] + len(x.data)))
     return csr_matrix((data, indices, indptr))
+
+def matrix_to_dict(m):
+    """It transform sparse matrix (scipy.sparse.matrix) to dictdict"""
+    d = defaultdict(lambda: {})
+    for f, (idx_b, idx_e) in enumerate(zip(m.indptr, m.indptr[1:])):
+        for idx in range(idx_b, idx_e):
+            d[f][g.indices[idx]] = m.data[idx]
+    return dict(d)
