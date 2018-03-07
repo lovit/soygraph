@@ -1,7 +1,7 @@
 from collections import defaultdict
 
 class DictGraph:
-    def __init__(self, graph=None):
+    def __init__(self, graph=None, inbound_graph=False):
         """
         Arguments
         ---------
@@ -9,13 +9,29 @@ class DictGraph:
             graph[from][to] = weight form
         """
         if graph and type(graph) == dict and type(list(graph.values())[0]) == dict:
-            self._index(graph)
+            self._index(graph, inbound_graph)
 
-    def _index(self, graph):
+    def _index(self, graph, inbound_graph):
+        if inbound_graph:
+            self._index_graph(graph)
+        else:
+            self._index_reverse_graph(graph)
+
+    def _index_graph(self, graph):
+        self.inb = {}
+        self.outb = defaultdict(lambda: [])
+        for to_node, from_dict in graph.items():
+            from_list = list(sorted(from_dict.items(), key=lambda x:-x[1]))
+            self.inb[to_node] = from_list
+            for from_node, weight in from_list:
+                self.outb[from_node].append((to_node, weight))
+        self.outb = dict(self.outb)
+        
+    def _index_reverse_graph(self, graph):
         self.inb = defaultdict(lambda: [])
         self.outb = {}
         for from_node, to_dict in graph.items():
-            to_list = list(sorted(to_dict.items(), key=lambda x:x[1]))
+            to_list = list(sorted(to_dict.items(), key=lambda x:-x[1]))
             self.outb[from_node] = to_list
             for to_node, weight in to_list:
                 self.inb[to_node].append((from_node, weight))
