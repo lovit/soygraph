@@ -2,11 +2,18 @@ from collections import defaultdict
 
 class DictGraph:
     def __init__(self, graph=None):
+        """
+        Arguments
+        ---------
+        graph: dict of dict
+            graph[from][to] = weight form
+        """
         if graph and type(graph) == dict and type(list(graph.values())[0]) == dict:
             self._index(graph)
 
     def _index(self, graph):
         self.inb = defaultdict(lambda: [])
+        self.outb = {}
         for from_node, to_dict in graph.items():
             to_list = list(sorted(to_dict.items(), key=lambda x:x[1]))
             self.outb[from_node] = to_list
