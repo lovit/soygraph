@@ -44,5 +44,5 @@ def matrix_to_dict(m):
     d = defaultdict(lambda: {})
     for f, (idx_b, idx_e) in enumerate(zip(m.indptr, m.indptr[1:])):
         for idx in range(idx_b, idx_e):
-            d[f][g.indices[idx]] = m.data[idx]
+            d[f][m.indices[idx]] = m.data[idx]
     return dict(d)
