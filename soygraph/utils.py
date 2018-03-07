@@ -32,8 +32,8 @@ def bow_to_graph(x):
     x = x.tocsr()
     x_ = x.transpose().tocsr()
     data = np.concatenate((x.data, x_.data))
-    indices = x_.indices + x.shape[1]
-    indices = np.concatenate((x.indices, indices))
-    indptr = x_.indptr[1:] + len(x.data)
-    indptr = np.concatenate((x.indptr, indptr))
+    indices = np.concatenate(
+        (x.indices + x.shape[0] , x_.indices))
+    indptr = np.concatenate(
+        (x.indptr, x_.indptr[1:] + len(x.data)))
     return csr_matrix((data, indices, indptr))
