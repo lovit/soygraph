@@ -33,16 +33,15 @@ class DictGraph:
         f.close()
 
     def inbounds(self, to_node):
-        """It returns list of tuple. 
+        """It returns list of tuple.
         [(from_node_1, weight), (from_node_2, weight), ...]
         """
         return self.inb.get(to_node, [])
 
     def outbounds(self, from_node):
-        """It returns list of tuple. 
+        """It returns list of tuple.
         [(to_node_1, weight), (to_node_2, weight), ...]
         """
-
         return self.outb.get(from_node, [])
 
     def add_node(self, from_node, to_node, weight):
@@ -65,3 +64,44 @@ class DictGraph:
         V = max(max(self.inb.keys()), max(self.outb.keys())) + 1
         E = sum([len(from_list) for to_node, from_list in self.outb.items()])
         return (V, E)
+
+class MatrixGraph:
+    def __init__(self, matrix):
+        """
+        Arguments
+        ---------
+        matrix: scipy.sparse.matrix
+        """
+        self._index(matrix)
+
+    def _index(self, matrix):
+        self.outb = matrix
+        self.inb = matrix.transpose()
+        self.V = matrix.shape[0]
+        self.E = len(matrix.data)
+
+    def inbounds(self, to_node):
+        """It returns list of tuple.
+        [(from_node_1, weight), (from_node_2, weight), ...]
+        """
+        if 0 <= to_node < self.V:
+            b = self.inb.indptr[to_node]
+            e = self.inb.indptr[to_node+1]
+            inbs = [(self.inb.indices[idx], self.inb.data[idx]) for idx in range(b, e)]
+            return inbs
+        return []
+
+    def outbounds(self, from_node):
+        """It returns list of tuple.
+        [(to_node_1, weight), (to_node_2, weight), ...]
+        """
+        if 0 <= to_node < self.V:
+            b = self.outb.indptr[to_node]
+            e = self.outb.indptr[to_node+1]
+            outb = [(self.outb.indices[idx], self.outb.data[idx]) for idx in range(b, e)]
+            return outb
+        return []
+
+    def shape(self):
+        """It returns (V, E)"""
+        return (self.V, self.E)
