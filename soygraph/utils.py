@@ -18,16 +18,16 @@ def get_process_memory():
 def bow_to_graph(x):
     """It transform doc-term sparse matrix to graph.
     Vertex = [doc_0, doc_1, ..., doc_{n-1}|term_0, term_1, ..., term_{m-1}]
-    
+
     Arguments
     ---------
     x: scipy.sparse
-    
+
     Returns
     -------
     g: scipy.sparse.csr_matrix
         V` = x.shape[0] + x.shape[1]
-        its shape = (V`, V`) 
+        its shape = (V`, V`)
     """
     x = x.tocsr()
     x_ = x.transpose().tocsr()
