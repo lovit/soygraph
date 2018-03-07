@@ -1,4 +1,4 @@
-class Graph:
+class DictGraph:
     def __init__(self, graph=None):
         self.inb = {}
         self.outb = {}
