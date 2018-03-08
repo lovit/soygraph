@@ -127,6 +127,12 @@ class MatrixGraph:
             return outb
         return []
 
+    def nodes(self):
+        return [i for i in range(self.V) if (
+            (self.outb.indptr[i] != self.outb.indptr[i+1]) or
+            (self.inb.indptr[i] != self.inb.indptr[i+1])
+        )]
+
     def shape(self):
         """It returns (V, E)"""
         return (self.V, self.E)
