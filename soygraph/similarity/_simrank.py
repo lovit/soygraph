@@ -59,60 +59,78 @@ class SimRank:
     
 class SingleVectorSimRank:
     def __init__(self, graph, max_iter=10, decaying_factor=0.80):
+        
         self.g = graph
         self.max_iter = max_iter
         self.df = decaying_factor
-        normalizer=lambda x: sum([w for node, w in x])
-        self.normi = {n:normalizer(inbs) for n, inbs in self.g.inb.items()}
-        self.normo = {n:normalizer(outbs) for n, outbs in self.g.outb.items()}
+
+        norm = lambda x: sum([w for node, w in x]) if x else 0
+        _nodes = graph.nodes()
+
+        self.sum_inb_weights = {node:norm(graph.inbounds(node)) for node in _nodes}
+        self.sum_outb_weights = {node:norm(graph.outbounds(node)) for node in _nodes}
 
     def query(self, q, topk=10, max_iter=-1):
+
         if max_iter < 0:
             max_iter = self.max_iter
-        tops = {q:1}
-        sims = {q:1}
-        kth = 0
 
-        for n_iter in range(1, max_iter+1):
-            df = pow(self.df, n_iter)
+        sims, meets = {q:1}, {q:1}
+        topk_sim = 0
 
+        for n_iter in range(max_iter):
+            df = pow(self.df, n_iter + 1)
+            
             sorted_sim = sorted(sims.items(), key=lambda x:x[1], reverse=True)
-            kth = sorted_sim[:topk][-1][1]
-            delta = (kth - sorted_sim[:topk+1][-1][1])
-            if delta > df:
-                break
+            topk_sim = sorted_sim[:topk][-1][1]
 
-            tops_ = {}
-            btrks = {}
-            for topb, tbw in tops.items():
-                for inb, inbw in self.g.inbounds(topb):
-                    inbw /= self.normi[topb]
-                    tops_[inb] = (tops_.get(inb, 0) + tbw * inbw)
-                    btrks[topb] = (btrks.get(topb, 0) - tbw * inbw)
+            # remove nodes that cannot be included in top k
+#             delta = (topk_sim - sorted_sim[:topk+1][-1][1])
+#             if delta > df:
+#                 break
 
-            for top, tw in tops_.items():
-                for outb, outbw in self.g.outbounds(top):
-                    outbw /= self.normi[outb]
-                    if outbw < delta:
+            # move forward
+            meets_ = {}
+            for meet, m_w in meets.items():
+                for inb, inb_w in self.g.inbounds(meet):
+                    inb_w /= self.sum_inb_weights[meet]
+                    meets_[inb] = meets_.get(inb, 0) + m_w * inb_w
+
+            # move backward
+            ## initialize
+            backward = {}
+            for meet, m_w in meets_.items():
+                if meet == q:
+                    sims = {node:sim * (1 + df * m_w) for node, sim in sims.items()}
+                    continue
+                for outb, outb_w in self.g.outbounds(meet):
+                    if outb in meets:
                         continue
-                    btrks[outb] = (btrks.get(outb, 0) + tw * outbw)
+                    outb_w /= self.sum_inb_weights[outb]
+                    backward[outb] = backward.get(outb, 0) + m_w * outb_w
+            ## iteration
+            for n_backstep in range(n_iter):
+                backward_ = {}
+                for back, b_w in backward.items():
+                    for outb, outb_w in self.g.outbounds(back):
+                        outb_w /= self.sum_inb_weights[outb]
+                        backward_[outb] = backward_.get(outb, 0) + b_w * outb_w
+                backward = backward_
 
-            btrks = {n:w for n,w in btrks.items() if w > 0}
-            tops = tops_
-            if not btrks:
-                continue
+            # for debugging
+#             print('\niter = {}'.format(n_iter+1))
+#             print('meets')
+#             pprint(meets_)
+#             print('similars')
+#             pprint(backward)
+            
+            # replace meets with meets_
+            meets = meets_
+            
+            # cumulate similarity
+            for back, b_w in backward.items():
+                sims[back] = sims.get(back, 0) + b_w * df
 
-            for n_back in range(1, n_iter):
-                btrks_ = {}
-                for top, tw in btrks.items():
-                    for outb, outbw in self.g.outbounds(top):
-                        outbw /= self.normi[outb]
-                        btrks_[outb] = (btrks_.get(outb, 0) + tw * outbw)
-                btrks = btrks_
-
-            for launch, lw in btrks.items():
-                if q != launch:
-                    sims[launch] = sims.get(launch, 0) + lw * df
         del sims[q]
         return sims
 
