@@ -26,6 +26,7 @@ class SimRank:
             sim_ = defaultdict(lambda: defaultdict(lambda: 0))
 
             for a in nodes:
+                print('\rnode = {}'.format(a), end='', flush=True)
                 for b in nodes:
 
                     if a == b:
@@ -81,7 +82,7 @@ class SingleVectorSimRank:
         for n_iter in range(max_iter):
             df = pow(self.df, n_iter + 1)
             
-            sorted_sim = sorted(sims.items(), key=lambda x:x[1], reverse=True)
+            sorted_sim = sorted(sims.items(), key=lambda x:-x[1])
             topk_sim = sorted_sim[:topk][-1][1]
 
             # remove nodes that cannot be included in top k
@@ -132,7 +133,12 @@ class SingleVectorSimRank:
                 sims[back] = sims.get(back, 0) + b_w * df
 
         del sims[q]
-        return sims
+
+        similars = sorted(sims.items(), key=lambda x:-x[1])
+        if topk > 0:
+            similars = similars[:topk]
+
+        return similars
 
 
 class SinglePairSimRank:
