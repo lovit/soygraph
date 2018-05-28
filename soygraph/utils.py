@@ -46,3 +46,16 @@ def matrix_to_dict(m):
         for idx in range(idx_b, idx_e):
             d[f][m.indices[idx]] = m.data[idx]
     return dict(d)
+
+def dict_to_matrix(dd):
+    rows = []
+    cols = []
+    data = []
+    for d1, d2s in dd.items():
+        for d2, w in d2s.items():
+            rows.append(d1)
+            cols.append(d2)
+            data.append(w)
+    n_nodes = max(max(rows), max(cols)) + 1
+    x = csr_matrix((data, (rows, cols)), shape=(n_nodes, n_nodes))
+    return x
