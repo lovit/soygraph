@@ -71,7 +71,7 @@ class SingleVectorSimRank:
         self.sum_inb_weights = {node:norm(graph.inbounds(node)) for node in _nodes}
         self.sum_outb_weights = {node:norm(graph.outbounds(node)) for node in _nodes}
 
-    def query(self, q, topk=10, max_iter=-1):
+    def most_similar(self, q, topk=10, max_iter=-1):
 
         if max_iter < 0:
             max_iter = self.max_iter
