@@ -24,6 +24,9 @@ class PageRank():
         else:
             x = inbound_matrix
 
+        # TODO
+        # outbound L1 normalization check
+
         self.rank = pagerank(
             x, self.df, self.max_iter, bias,
             self.ranksum, self.verbose, self.converge_threshold)
