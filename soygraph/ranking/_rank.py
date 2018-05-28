@@ -32,6 +32,30 @@ class PageRank():
             self.ranksum, self.verbose, self.converge_threshold)
         return self.rank
 
+class BiasedReinforceRank():
+    
+    def __init__(self, damping_factor=0.85, max_iter=30,
+        ranksum=1.0, verbose=True, converge_threshold=0.0001):
+        
+        self.df = damping_factor
+        self.max_iter = max_iter
+        self.ranksum = ranksum
+        self.verbose = verbose
+        self.converge_threshold = converge_threshold
+
+    def rank(self, inbound_matrix, bias=None):
+        if is_numeric_dict_dict(inbound_matrix):
+            x = dict_to_matrix(inbound_matrix)
+        elif not sp.issparse(inbound_matrix):
+            raise ValueError('inboud_matrix type should be sparse matrix')
+        else:
+            x = inbound_matrix
+
+        self.rank = pagerank(
+            x, self.df, self.max_iter, bias,
+            self.ranksum, self.verbose, self.converge_threshold)
+        return self.rank
+
 class HITS():
 
     def __init__(self, damping_factor=0.85, max_iter=30,
