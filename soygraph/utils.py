@@ -59,3 +59,18 @@ def dict_to_matrix(dd):
     n_nodes = max(max(rows), max(cols)) + 1
     x = csr_matrix((data, (rows, cols)), shape=(n_nodes, n_nodes))
     return x
+
+def is_dict_dict(dd):
+    if not type(dd) == dict:
+        return False
+    value_item = list(dd.values())[0]
+    return type(value_item) == dict
+
+def is_numeric_dict_dict(dd):
+    if not is_dict_dict(dd):
+        return False
+    key0 = list(dd.keys())[0]
+    key1, value1 = list(list(dd.values())[0].items())[0]
+    if not type(key0) == int or not type(key1) == int:
+        return False
+    return type(value1) == int or type(value1) == float
